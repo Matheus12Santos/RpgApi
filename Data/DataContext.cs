@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RpgApi.Models;
 using RpgApi.Models.Enuns;
 using RpgApi.Utils;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace RpgApi.Data
 {
@@ -61,23 +62,23 @@ namespace RpgApi.Data
             modelBuilder.Entity<Personagem>().HasData
             (
                 new Personagem() { Id = 1, Nome = "Frodo", PontosVida = 100, Forca = 17, Defesa = 23, Inteligencia = 33, Classe = ClasseEnum.Cavaleiro, UsuarioId = 1 },
-                new Personagem() { Id = 2, Nome = "Sam", PontosVida = 100, Forca = 15, Defesa = 25, Inteligencia = 30, Classe = ClasseEnum.Cavaleiro, UsuarioId = 2 },
-                new Personagem() { Id = 3, Nome = "Galadriel", PontosVida = 100, Forca = 18, Defesa = 21, Inteligencia = 35, Classe = ClasseEnum.Clerigo, UsuarioId = 3 },
-                new Personagem() { Id = 4, Nome = "Gandalf", PontosVida = 100, Forca = 18, Defesa = 18, Inteligencia = 37, Classe = ClasseEnum.Mago, UsuarioId = 4 },
-                new Personagem() { Id = 5, Nome = "Hobbit", PontosVida = 100, Forca = 20, Defesa = 17, Inteligencia = 31, Classe = ClasseEnum.Cavaleiro, UsuarioId = 5 },
-                new Personagem() { Id = 6, Nome = "Celeborn", PontosVida = 100, Forca = 21, Defesa = 13, Inteligencia = 34, Classe = ClasseEnum.Clerigo, UsuarioId = 6 },
-                new Personagem() { Id = 7, Nome = "Radagast", PontosVida = 100, Forca = 25, Defesa = 11, Inteligencia = 35, Classe = ClasseEnum.Mago, UsuarioId = 7 }
+                new Personagem() { Id = 2, Nome = "Sam", PontosVida = 100, Forca = 15, Defesa = 25, Inteligencia = 30, Classe = ClasseEnum.Cavaleiro, UsuarioId = 1 },
+                new Personagem() { Id = 3, Nome = "Galadriel", PontosVida = 100, Forca = 18, Defesa = 21, Inteligencia = 35, Classe = ClasseEnum.Clerigo, UsuarioId = 1 },
+                new Personagem() { Id = 4, Nome = "Gandalf", PontosVida = 100, Forca = 18, Defesa = 18, Inteligencia = 37, Classe = ClasseEnum.Mago, UsuarioId = 1 },
+                new Personagem() { Id = 5, Nome = "Hobbit", PontosVida = 100, Forca = 20, Defesa = 17, Inteligencia = 31, Classe = ClasseEnum.Cavaleiro, UsuarioId = 1 },
+                new Personagem() { Id = 6, Nome = "Celeborn", PontosVida = 100, Forca = 21, Defesa = 13, Inteligencia = 34, Classe = ClasseEnum.Clerigo, UsuarioId = 1 },
+                new Personagem() { Id = 7, Nome = "Radagast", PontosVida = 100, Forca = 25, Defesa = 11, Inteligencia = 35, Classe = ClasseEnum.Mago, UsuarioId = 1 }
             );
 
             modelBuilder.Entity<Arma>().HasData
             (
-              new Arma() { Id = 1, Nome = "Arco e Flecha", Dano = 35 },
-              new Arma() { Id = 2, Nome = "Espada Longa", Dano = 33 },
-              new Arma() { Id = 3, Nome = "Machado", Dano = 31 },
-              new Arma() { Id = 4, Nome = "Punho", Dano = 30 },
-              new Arma() { Id = 5, Nome = "Chicote", Dano = 34 },
-              new Arma() { Id = 6, Nome = "Foice", Dano = 33 },
-              new Arma() { Id = 7, Nome = "Cajado", Dano = 32 }
+              new Arma() { Id = 1, Nome = "Arco e Flecha", Dano = 35, PersonagemId = 1 },
+              new Arma() { Id = 2, Nome = "Espada Longa", Dano = 33, PersonagemId = 2 },
+              new Arma() { Id = 3, Nome = "Machado", Dano = 31, PersonagemId = 3 },
+              new Arma() { Id = 4, Nome = "Punho", Dano = 30, PersonagemId = 4 },
+              new Arma() { Id = 5, Nome = "Chicote", Dano = 34, PersonagemId = 5 },
+              new Arma() { Id = 6, Nome = "Foice", Dano = 33, PersonagemId = 6 },
+              new Arma() { Id = 7, Nome = "Cajado", Dano = 32, PersonagemId = 7 }
             );
 
             modelBuilder.Entity<PersonagemHabilidade>()
@@ -109,5 +110,13 @@ namespace RpgApi.Data
         {
             configurationBuilder.Properties<string>().HaveColumnType("Varchar").HaveMaxLength(200);
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+              warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        }
+
+
     }
 }
