@@ -27,6 +27,7 @@ namespace RpgApi.Controllers
             }
             return false;
         }
+
         [HttpPost("Registrar")]
         public async Task<IActionResult> RegistrarUsuario(Usuario user)
         {
@@ -48,6 +49,7 @@ namespace RpgApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
         {
