@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RpgApi.Data;
 using RpgApi.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace RpgApi.Controllers
 {
@@ -18,6 +19,8 @@ namespace RpgApi.Controllers
             _context = context;
         }
 
+        //(4) Inserir no método GetSingle da controller de personagem uma forma de exibir o usuário que o personagem 
+        // pertence. Using de System.Collections.Generic.
         [HttpGet("{id}")] //Buscar pelo id
         public async Task<IActionResult> GetSingle(int id)
         {
@@ -28,6 +31,11 @@ namespace RpgApi.Controllers
                     .Include(ph => ph.PersonagemHabilidades)
                         .ThenInclude(h => h.Habilidade)//Carrega a lista de personagens habilidades de p
                     .FirstOrDefaultAsync(pBusca => pBusca.Id == id);
+
+                if (p == null)
+                {
+                    return NotFound("Personagem não encontrado.");
+                }
                 return Ok(p);
             }
             catch (System.Exception ex)

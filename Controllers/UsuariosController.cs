@@ -50,6 +50,9 @@ namespace RpgApi.Controllers
             }
         }
         
+        //(3) Na classe UsuariosController.cs, altere o método autenticar para que na linha anterior ao “return Ok, a 
+        // propriedade data de acesso do objeto “usuario” seja alimentada com a data/hora atual e 
+        // salve as alterações no Banco via EF.  
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciais)
         {
@@ -66,6 +69,8 @@ namespace RpgApi.Controllers
                 }
                 else
                 {
+                    usuario.DataAcesso = DateTime.Now;
+                    await _context.SaveChangesAsync();
                     return Ok(usuario);
                 }
             }
@@ -73,6 +78,46 @@ namespace RpgApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        //(1) Criar um método Put com rota “AlterarSenha” na classe UsuariosController.cs que 
+        // criptografe e altere a senha do usuário no banco e faça com que ele consiga autenticar. 
+        [HttpPut("AlterarSenha")]
+        public async Task<IActionResult> AlterarSenha(Usuario usuario)
+        {
+            try
+            {
+                Usuario? usuarioExistente = await _context.TB_USUARIOS.FirstOrDefaultAsync(usu => usu.Id == usuario.Id);
+
+                if(usuarioExistente == null)
+                {
+                    return NotFound("Usuario não encontrado.");
+                }
+
+                // Gerar o novo hash e salt para a nova senha
+                byte[] novoHash;
+                byte[] novoSalt;
+                Criptografia.CriaPasswordHash(usuario.PasswordString, out novoHash, out novoSalt);
+
+                usuarioExistente.PasswordHash = novoHash;
+                usuarioExistente.PasswordSalt = novoSalt;
+
+                await _context.SaveChangesAsync();
+
+                return Ok("Senha alterada com sucesso.");
+            }
+            catch(System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //(2) Criar um método Get para listar todos os Usuarios na classe UsuariosController.cs 
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> ListarUsuarios()
+        {
+            var usuarios = await _context.TB_USUARIOS.ToListAsync();
+            return Ok(usuarios);
         }
     }
 }

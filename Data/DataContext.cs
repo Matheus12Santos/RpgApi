@@ -53,9 +53,10 @@ namespace RpgApi.Data
             user.PasswordHash = hash;
             user.PasswordSalt = salt;
             user.Perfil = "Admin";
-            user.Email = "seuEmailegmail.com";
+            user.Email = "seuEmail@example.com";
             user.Latitude = -23.5200241;
             user.Longitude = -46.596498;
+            user.DataAcesso = new DateTime(2025, 1, 1);
             modelBuilder.Entity<Usuario>().HasData(user);
             //Fim da criação do usuário padrão.
 
