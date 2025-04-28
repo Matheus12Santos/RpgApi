@@ -60,8 +60,10 @@ namespace RpgApi.Controllers
         public async Task<IActionResult> PersonagemHabilidadeByPersonagemId(int id)
         {
             try {
-                List<PersonagemHabilidade> habilidades = await _context.TB_PERSONAGENS_HABILIDADES.Where(ph => ph.PersonagemId == id)
-                    .ToListAsync();
+                List<PersonagemHabilidade> habilidades = await _context.TB_PERSONAGENS_HABILIDADES
+                .Include(p => p.Personagem)
+                .Include(p => p.Habilidade)                
+                .Where(ph => ph.PersonagemId == id).ToListAsync();
 
                 if (habilidades == null || !habilidades.Any())
                 {

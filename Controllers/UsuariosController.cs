@@ -70,6 +70,7 @@ namespace RpgApi.Controllers
                 else
                 {
                     usuario.DataAcesso = DateTime.Now;
+                    _context.TB_USUARIOS.Update(usuario);
                     await _context.SaveChangesAsync();
                     return Ok(usuario);
                 }
@@ -83,28 +84,26 @@ namespace RpgApi.Controllers
         //(1) Criar um método Put com rota “AlterarSenha” na classe UsuariosController.cs que 
         // criptografe e altere a senha do usuário no banco e faça com que ele consiga autenticar. 
         [HttpPut("AlterarSenha")]
-        public async Task<IActionResult> AlterarSenha(Usuario usuario)
+        public async Task<IActionResult> AlterarSenha(Usuario credenciais)
         {
             try
             {
-                Usuario? usuarioExistente = await _context.TB_USUARIOS.FirstOrDefaultAsync(usu => usu.Id == usuario.Id);
+                Usuario? usuarioExistente = await _context.TB_USUARIOS.FirstOrDefaultAsync(x => x.Username.ToLower()
+                .Equals(credenciais.Username.ToLower()));
 
-                if(usuarioExistente == null)
-                {
-                    return NotFound("Usuario não encontrado.");
-                }
+                if(usuarioExistente == null)                
+                    throw new System.Exception("Usuario não encontrado.");                
 
                 // Gerar o novo hash e salt para a nova senha
-                byte[] novoHash;
-                byte[] novoSalt;
-                Criptografia.CriaPasswordHash(usuario.PasswordString, out novoHash, out novoSalt);
+                Criptografia.CriaPasswordHash(credenciais.PasswordString, out byte[] hash, out byte[] salt);
 
-                usuarioExistente.PasswordHash = novoHash;
-                usuarioExistente.PasswordSalt = novoSalt;
+                usuarioExistente.PasswordHash = hash;
+                usuarioExistente.PasswordSalt = salt;
 
-                await _context.SaveChangesAsync();
+                _context.TB_USUARIOS.Update(usuarioExistente);
+                int linhasAfetadas = await _context.SaveChangesAsync();                
 
-                return Ok("Senha alterada com sucesso.");
+                return Ok(linhasAfetadas);
             }
             catch(System.Exception ex)
             {
