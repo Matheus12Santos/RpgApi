@@ -3,6 +3,7 @@ using RpgApi.Data;
 using RpgApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace RpgApi.Controllers
 {
@@ -12,11 +13,13 @@ namespace RpgApi.Controllers
     {
         //Programação seguinte será aqui
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
 
-        public PersonagensController(DataContext context)
+        public PersonagensController(DataContext context, IConfiguration configuration)
         {
             //Inicialização do atributo a partir de um parâmetro
             _context = context;
+            _configuration = configuration;
         }
 
         //(4) Inserir no método GetSingle da controller de personagem uma forma de exibir o usuário que o personagem 
