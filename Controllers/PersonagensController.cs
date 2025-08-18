@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using RpgApi.Controllers.Extensions;
+
 
 namespace RpgApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Jogador, Admin")]
     [ApiController]
     [Route("[Controller]")]
     public class PersonagensController : ControllerBase
@@ -219,8 +221,10 @@ namespace RpgApi.Controllers
         { 
             try 
             { 
+                int id = User.UsuarioId();
+
                 List<Personagem> lista = await _context.TB_PERSONAGENS 
-                            .Where(u => u.Usuario.Id == userId) 
+                            .Where(u => u.Usuario.Id == id) 
                             .ToListAsync(); 
  
                 return Ok(lista); 
@@ -268,6 +272,26 @@ namespace RpgApi.Controllers
             { 
                 return BadRequest(ex.Message); 
             } 
+        }
+        
+        [HttpGet("GetByPerfil")]
+        public async Task<IActionResult> GetByPerfilAsync()
+        {
+            try
+            {
+                List<Personagem> lista = new List<Personagem>();
+
+                if (User.UsuarioPerfil() == "Admin")
+                    lista = await _context.TB_PERSONAGENS.ToListAsync();
+                else
+                    lista = await _context.TB_PERSONAGENS
+                            .Where(p => p.Usuario.Id == User.UsuarioId()).ToListAsync();
+                return Ok(lista);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message + " - " + ex.InnerException);
+            }
         } 
     }//Fim da classe do tipo controller
 }
